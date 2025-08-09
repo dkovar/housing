@@ -17,6 +17,7 @@ st.set_page_config(layout="wide")
 st.title("🏠 Housing Data Explorer")
 
 df = load_data("table.csv")
+df = clean_housing_data(df)
 
 
 st.sidebar.title("Navigation")

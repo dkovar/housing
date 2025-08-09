@@ -12,6 +12,7 @@ from views import (
     todo,
     data
 )
+from clean import clean_housing_data
 
 st.set_page_config(layout="wide")
 st.title("🏠 Housing Data Explorer")

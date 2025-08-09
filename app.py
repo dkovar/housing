@@ -9,7 +9,8 @@ from views import (
     map_view,
     about,
     background,
-    todo
+    todo,
+    data
 )
 
 st.set_page_config(layout="wide")
@@ -27,7 +28,8 @@ page = st.sidebar.radio("Select a section", [
     "Map View",
     "About",
     "Background",
-    "To Do"
+    "To Do",
+    "Data"
 ])
 
 filtered_df = apply_filters(df)
@@ -48,3 +50,5 @@ elif page == "Background":
     background.render()
 elif page == "To Do":
     todo.render()
+elif page == "Data":
+    data.render()

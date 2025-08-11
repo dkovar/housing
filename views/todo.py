@@ -2,7 +2,7 @@
 import streamlit as st
 import os
 
-TODO_PATH = "todo.md"  # change to whatever filename you want
+TODO_PATH = "views/todo.md"  # change to whatever filename you want
 
 def render():
     # Optional: let user refresh after you edit the file externally

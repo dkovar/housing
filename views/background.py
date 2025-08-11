@@ -1,18 +1,25 @@
+# pages/todo_readonly.py
 import streamlit as st
+import os
+
+BACKGROUND_PATH = "views/background.md"  # change to whatever filename you want
 
 def render():
-    st.title("Background")
-    st.subheader("Why?")
-    st.markdown("""This started as an effort to educate myself about a local housing crisis and I suspect it will be part of an ongoing effort to educate myself about housing in general.""")
+    # Optional: let user refresh after you edit the file externally
+    st.button("Refresh")
 
-    st.subheader("Data access, data quality")
-    st.markdown("""I thought I could just walk into the Town's offices, or go to their web site, and find detailed data about the housing stock in town...""")
+    if not os.path.exists(BACKGROUND_PATH):
+        st.error(f"'{BACKGROUND_PATH}' not found in the current directory.")
+        st.info("Create a file named 'background.md', then click Refresh.")
+        return
 
-    st.subheader("Tangent - Engagement and Town Support")
-    st.markdown("""Please do not take any of this work as an indictment or criticism of the Town's government...""")
+    try:
+        # If you ever hit encoding issues, add encoding='utf-8' or 'latin-1'
+        with open(BACKGROUND_PATH, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        st.error(f"Couldn't read '{BACKGROUND_PATH}': {e}")
+        return
 
-    st.subheader("Government Transparency")
-    st.markdown("""Technically, the Town complies with all local, state, and Federal regulations and laws about transparency and data access...""")
-
-    st.subheader("So, This Application")
-    st.markdown("""This is intended to educate myself and to spark discussions...""")
+    # Render as Markdown (wrapped text, headings, numbered lists, etc.)
+    st.markdown(content)

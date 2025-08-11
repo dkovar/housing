@@ -26,7 +26,7 @@ Some of the educational resources that I've used along the way are:
 
 ### Books
 
-- "Escaping the Housing Trap" - https://www.housingtrap.org/
+- "Escaping the Housing Trap" - https://www.housingtrap.org/<br>
 This is a book, a book tour, a collection of resources, and more. An excellent starting point.
-- "Communities and Consequences II" - https://nhpbs.org/communitiesandconsequences/?resource=7168
+- "Communities and Consequences II" - https://nhpbs.org/communitiesandconsequences/?resource=7168<br>
 This is a book, PBS series, and study guide mostly about New Hampshire housing issues. 

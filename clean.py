@@ -40,20 +40,6 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("11 Court St", "DROP"),
         ("16 Kingston Rd", "DROP"),
         ("8 Continental Dr", "DROP"),
-        ("27 Front St", "DROP")
-    ]
-
-    updates = [
-        ("11 Boulder Brook Dr", "Townhouse"),
-        ("1 Hampton Rd", "DROP"),
-        ("117 Water St", "DROP"),
-        ("6 White Oak Dr", "Assisted Living"),
-        ("7 Riverwoods Dr", "Assisted Living"),
-        ("17 Hampton Rd", "Assisted Living"),
-        ("40 Hampton Rd", "Manufactured"),
-        ("11 Court St", "DROP"),
-        ("16 Kingston Rd", "DROP"),
-        ("8 Continental Dr", "DROP"),
         ("27 Front St", "DROP"),
         # Wildcard examples:
         (r".?. Deep Mdws", "Manufactured"),

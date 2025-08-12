@@ -39,7 +39,6 @@ def load_and_clean_data(path):
     return df
 
 df = load_and_clean_data(data_path)
-filtered_df = apply_filters(df)
 
 # Keep current page in session
 if "page" not in st.session_state:
@@ -55,6 +54,8 @@ st.sidebar.title("Navigation")
 selected = st.sidebar.radio("Select a section", PAGES, index=PAGES.index(st.session_state.page))
 if selected != st.session_state.page:
     navigate_to(selected)
+
+filtered_df = apply_filters(df)
 
 # Route
 page = st.session_state.page
@@ -74,3 +75,5 @@ elif page == "About":
     about.render()
 elif page == "Background":
     background.render()
+    
+

@@ -42,6 +42,8 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("7 Riverwoods Dr", "Assisted Living"),
         ("17 Hampton Rd", "Assisted Living"),
         ("11 Court St", "DROP"),
+        ("16 Kingston Rd", "DROP"),
+        ("27 Front St", "DROP")
     ]
     if "addressLine1" in df.columns:
         drop_addresses = {addr for addr, new_type in updates if new_type == "DROP"}

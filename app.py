@@ -36,9 +36,9 @@ PAGES = [
 def load_and_clean_data(path):
     df_before = load_data("table.csv")
     df_cleaned = clean_housing_data(df_before)
-    return df_cleaned
+    return df_before, df_clean
 
-df_clean = load_and_clean_data(data_path)
+df_before, df_clean = load_and_clean_data(data_path)
 
 # Keep current page in session
 if "page" not in st.session_state:

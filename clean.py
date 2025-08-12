@@ -43,7 +43,13 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
     updates = [
         ("11 Boulder Brook Dr", "Townhouse"),
         ("1 Hampton Rd", "DROP"),
+        ("1 Hampton Rd", "DROP"),
         ("117 Water St", "DROP"),
+        ("5 Timber Ln", "Assisted Living"),
+        ("6 Timber Ln", "Assisted Living"),
+        ("6 White Oak Dr", "Assisted Living"),
+        ("7 Riverwoods Dr", "Assisted Living"), 
+        ("17 Hampton Rd", "Assisted Living"),
         ("11 Court St", "DROP")
     ]
     
@@ -66,6 +72,11 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         lambda row: update_map.get(row["addressLine1"], row["propertyType"]),
         axis=1
     )
+
+    # -----
+    
+    # Drop all PO Box records
+    df = df[~df["addressLine1"].str.strip().str.upper().str.startswith("PO BOX")]
 
     # -----
 

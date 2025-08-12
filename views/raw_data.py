@@ -12,25 +12,25 @@ def render(filtered_df):
     - There is no clean way to identify an ADU. It might be possible to identify ADUs through analysis.""")
 
 
-	def make_summary(df: pd.DataFrame) -> pd.DataFrame:
-		summary_data = {
-			"Total Properties": [len(df)],
-			"Year Range": [f"{df['yearBuilt'].min()} – {df['yearBuilt'].max()}"],
-		}
-		type_counts = df["propertyType"].value_counts().to_dict()
-		for prop_type, count in type_counts.items():
-			summary_data[f"{prop_type} Units"] = [count]
-		return pd.DataFrame(summary_data)
-	
-	def render(df_before, df_after, filtered_df):
-		st.subheader("Summary of Data — Before Cleaning")
-		st.dataframe(make_summary(df_before))
-	
-		st.subheader("Summary of Data — After Cleaning")
-		st.dataframe(make_summary(df_after))
-	
-		st.subheader("Summary of Data — After Filtering")
-		st.dataframe(make_summary(filtered_df))
-	
-		st.subheader("Filtered Housing Data")
-		st.dataframe(filtered_df)
+    def make_summary(df: pd.DataFrame) -> pd.DataFrame:
+        summary_data = {
+            "Total Properties": [len(df)],
+            "Year Range": [f"{df['yearBuilt'].min()} – {df['yearBuilt'].max()}"],
+        }
+        type_counts = df["propertyType"].value_counts().to_dict()
+        for prop_type, count in type_counts.items():
+            summary_data[f"{prop_type} Units"] = [count]
+        return pd.DataFrame(summary_data)
+    
+    def render(df_before, df_after, filtered_df):
+        st.subheader("Summary of Data — Before Cleaning")
+        st.dataframe(make_summary(df_before))
+    
+        st.subheader("Summary of Data — After Cleaning")
+        st.dataframe(make_summary(df_after))
+    
+        st.subheader("Summary of Data — After Filtering")
+        st.dataframe(make_summary(filtered_df))
+    
+        st.subheader("Filtered Housing Data")
+        st.dataframe(filtered_df)

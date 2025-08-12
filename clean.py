@@ -56,9 +56,9 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("8 Continental Dr", "DROP"),
         ("27 Front St", "DROP"),
         # Wildcard examples:
-        (r".?. Deep Mdws$", "Manufactured"),   # optional first digit, then digit
-        (r"^.*Stonewall Way$", "Townhouse"),
-        (r"^\d Timber Ln", "Assisted Living")
+        (r".?. Deep Mdws", "Manufactured"),   # optional first digit, then digit
+        (r"^.*Stonewall Way", "Townhouse"),
+        (r"\d Timber Ln", "Assisted Living")
     ]
     
     if "addressLine1" in df.columns:

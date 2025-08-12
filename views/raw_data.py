@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-def render(filtered_df):
+def render(df_before, df_after, filtered_df):
     st.subheader("Data issues")
     st.markdown("""
     - Records with an invalid or missing 'Year Built' value were assigned the year 1600.

@@ -35,10 +35,10 @@ PAGES = [
 @st.cache_data
 def load_and_clean_data(path):
     df_before = load_data("table.csv")
-    df_clean = clean_housing_data(df_before)
-    return df_clean
+    df_cleaned = clean_housing_data(df_before)
+    return df_cleaned
 
-df = load_and_clean_data(data_path)
+df_clean = load_and_clean_data(data_path)
 
 # Keep current page in session
 if "page" not in st.session_state:

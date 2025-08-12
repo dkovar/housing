@@ -63,7 +63,7 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
     regex_updates = [
         (r"^\d[A-Za-z]\sStonewall Way$", "Townhouse"),  # change propertyType via regex
         (r"^\d\sStonewall Way$", "Townhouse"),  # change propertyType via regex
-        (r"^\d?\d Deep Mdws", "Manufactured"),  # change propertyType via regex
+#        (r"^\d?\d Deep Mdws", "Manufactured"),  # change propertyType via regex
         (r"^\d Timber Ln", "Assisted Living"),  # change propertyType via regex
         # (r"^PO Box\s+\d+$", "DROP"),                  # example DROP via regex
     ]

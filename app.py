@@ -30,8 +30,12 @@ PAGES = [
     "Background",
 ]
 
-df = load_data("table.csv")
-df = clean_housing_data(df)
+@st.cache_data
+def load_and_clean_data(path):
+    df = load_data(path)
+    df = clean_housing_data(df)
+    return df
+    
 filtered_df = apply_filters(df)
 
 # Keep current page in session

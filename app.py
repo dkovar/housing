@@ -15,6 +15,8 @@ from views import (
 )
 from clean import clean_housing_data
 
+data_path = "./table.csv"
+
 st.set_page_config(layout="wide")
 st.title("🏠 Housing Data Explorer")
 
@@ -35,7 +37,8 @@ def load_and_clean_data(path):
     df = load_data(path)
     df = clean_housing_data(df)
     return df
-    
+
+df = load_and_clean_data(data_path)
 filtered_df = apply_filters(df)
 
 # Keep current page in session

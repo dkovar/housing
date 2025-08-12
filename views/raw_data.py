@@ -10,18 +10,27 @@ def render(filtered_df):
     - Condos are similar to apartments in that there are records for each unit as well as the building. This means that, without some careful data cleaning, the number of condos is the number of condo units. The fix is likely to create a new record for condo buildings and clean the data appropriately.
     - A number of records include just an address with no additional data. These are most often apartments
     - There is no clean way to identify an ADU. It might be possible to identify ADUs through analysis.""")
-    
-    st.subheader("Summary of Filtered Data")
-    summary_data = {
-        "Total Properties": [len(filtered_df)],
-        "Year Range": [f"{filtered_df['yearBuilt'].min()} – {filtered_df['yearBuilt'].max()}"],
-    }
 
-    type_counts = filtered_df["propertyType"].value_counts().to_dict()
-    for prop_type, count in type_counts.items():
-        summary_data[f"{prop_type} Units"] = [count]
 
-    st.dataframe(pd.DataFrame(summary_data))
-
-    st.subheader("Filtered Housing Data")
-    st.dataframe(filtered_df)
+	def make_summary(df: pd.DataFrame) -> pd.DataFrame:
+		summary_data = {
+			"Total Properties": [len(df)],
+			"Year Range": [f"{df['yearBuilt'].min()} – {df['yearBuilt'].max()}"],
+		}
+		type_counts = df["propertyType"].value_counts().to_dict()
+		for prop_type, count in type_counts.items():
+			summary_data[f"{prop_type} Units"] = [count]
+		return pd.DataFrame(summary_data)
+	
+	def render(df_before, df_after, filtered_df):
+		st.subheader("Summary of Data — Before Cleaning")
+		st.dataframe(make_summary(df_before))
+	
+		st.subheader("Summary of Data — After Cleaning")
+		st.dataframe(make_summary(df_after))
+	
+		st.subheader("Summary of Data — After Filtering")
+		st.dataframe(make_summary(filtered_df))
+	
+		st.subheader("Filtered Housing Data")
+		st.dataframe(filtered_df)

@@ -29,6 +29,69 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].apply(safe_parse)
 
+    # -----
+    # Drop rows where addressLine2 starts with "Ste". These are offices.
+    df.drop(
+        df[df["addressLine2"].str.startswith("Ste", na=False)].index,
+        inplace=True
+    )
+    
+    # -----
+
+    # Fix blocks of records where we personally know what type of property they are
+
+    updates = [
+        ("11 Boulder Brook Dr", "Townhouse"),
+        ("1 Hampton Rd", "DROP"),
+        ("117 Water St", "DROP"),
+        ("11 Court St", "DROP")
+    ]
+    
+    # Convert to DataFrame for easy join-based updating
+    updates_df = pd.DataFrame(updates, columns=["addressLine1", "newType"])
+    
+#     # Show before
+#     print("=== BEFORE ===")
+#     print(df[df["addressLine1"].isin([u[0] for u in updates])][["addressLine1", "propertyType"]])
+#     
+    # Separate drops and updates
+    drop_addresses = [addr for addr, new_type in updates if new_type == "DROP"]
+    update_map = {addr: new_type for addr, new_type in updates if new_type != "DROP"}
+    
+    # Drop all in one go
+    df = df[~df["addressLine1"].isin(drop_addresses)]
+    
+    # Update property types in one go
+    df["propertyType"] = df.apply(
+        lambda row: update_map.get(row["addressLine1"], row["propertyType"]),
+        axis=1
+    )
+
+    # -----
+
+    # Find records where the address is an apartment but there is no propertyType
+    # Assume these are apartments and not condos.
+    
+    # Find rows where propertyType is null/empty and addressLine2 starts with 'Apt'
+    mask = df["propertyType"].isna() & df["addressLine2"].str.startswith("Apt", na=False)
+    
+    # Update propertyType to "Apartment" for those rows
+    df.loc[mask, "propertyType"] = "Apartment"
+    
+    # -----
+
+    # Find instances where there is a single unit at an address but it is recorded as
+    # a condo. Change this to Townhouse
+    
+    # Group by addressLine1 and count how many records per address
+    group_counts = df.groupby("addressLine1")["addressLine1"].transform("count")
+
+    # Mask: only one record for this addressLine1 and propertyType == "Condo"
+    mask = (group_counts == 1) & (df["propertyType"] == "Condo")
+
+    # Update propertyType to "Townhouse"
+    df.loc[mask, "propertyType"] = "Townhouse"
+
     # Normalize propertyType
     df["propertyType"] = df["propertyType"].fillna("").apply(lambda x: x.strip() if isinstance(x, str) else "")
     df["propertyType"] = df["propertyType"].replace("", "Unknown")
@@ -79,7 +142,7 @@ def promote_apartment_buildings(df: pd.DataFrame) -> pd.DataFrame:
         grp = df.loc[grp_idx]
 
         # Mark existing rows as apartment units
-        df.loc[grp_idx, "propertyType"] = "Apartment unit"
+        df.loc[grp_idx, "propertyType"] = "Apartment"
 
         # First row becomes building template
         first = grp.iloc[0].copy()

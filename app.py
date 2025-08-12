@@ -34,8 +34,8 @@ PAGES = [
 
 @st.cache_data
 def load_and_clean_data(path):
-    df = load_data(path)
-    df = clean_housing_data(df)
+	df_before = load_data("table.csv")
+    df_clean = clean_housing_data(df_before)
     return df
 
 df = load_and_clean_data(data_path)
@@ -55,14 +55,14 @@ selected = st.sidebar.radio("Select a section", PAGES, index=PAGES.index(st.sess
 if selected != st.session_state.page:
     navigate_to(selected)
 
-filtered_df = apply_filters(df)
+filtered_df = apply_filters(df_clean)
 
 # Route
 page = st.session_state.page
 if page == "Landing":
     landing.render(navigate_to, PAGES)
 elif page == "Raw Data":
-    raw_data.render(filtered_df)
+    raw_data.render(df_before, df_clean, filtered_df)
 elif page == "Property Type Pie Chart":
     pie_chart.render(filtered_df)
 elif page == "Property Type by Year Built":

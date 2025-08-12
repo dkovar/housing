@@ -45,6 +45,16 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("16 Kingston Rd", "DROP"),
         ("27 Front St", "DROP")
     ]
+    
+    # 3b) Regex-based fixes (drops + updates)
+    #   Use Python regular expressions. Examples:
+    #   - r"^\d[A-Za-z]\sStonewall Way$"  -> matches "3B Stonewall Way", "7C Stonewall Way", etc.
+    #   - r"^1\d{2}\sWater St$"           -> matches "117 Water St", "123 Water St" (100–199)
+    regex_updates = [
+        (r"^\d[A-Za-z]\sStonewall Way$", "Townhouse"),  # change propertyType via regex
+        # (r"^PO Box\s+\d+$", "DROP"),                  # example DROP via regex
+    ]
+
     if "addressLine1" in df.columns:
         drop_addresses = {addr for addr, new_type in updates if new_type == "DROP"}
         update_map = {addr: new_type for addr, new_type in updates if new_type != "DROP"}

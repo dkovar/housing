@@ -2,6 +2,7 @@ import streamlit as st
 from data_loader import load_data
 from filters import apply_filters
 from views import (
+    landing,
     raw_data,
     pie_chart,
     bar_by_year,

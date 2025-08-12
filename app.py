@@ -36,7 +36,8 @@ if "page" not in st.session_state:
 
 def navigate_to(page_label: str):
     st.session_state.page = page_label
-    st.experimental_rerun()
+    # Streamlit >= 1.27
+    st.rerun()
     
 # Sidebar nav (you can keep filters above or below as you prefer)
 st.sidebar.title("Navigation")

@@ -34,6 +34,10 @@ PAGES = [
 if "page" not in st.session_state:
     st.session_state.page = "Landing"
 
+def navigate_to(page_label: str):
+    st.session_state.page = page_label
+    st.experimental_rerun()
+    
 # Sidebar nav (you can keep filters above or below as you prefer)
 st.sidebar.title("Navigation")
 selected = st.sidebar.radio("Select a section", PAGES, index=PAGES.index(st.session_state.page))

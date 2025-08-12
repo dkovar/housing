@@ -16,30 +16,22 @@ def safe_parse(value):
         pass
     return {}
 
+
 def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Cleans up housing dataset:
-      - Parses certain columns containing dict-like strings
-      - Normalizes property types
-      - Fills missing numeric values for bedrooms, bathrooms, yearBuilt
-    """
+    # Work on our own copy
+    df = df.copy()
 
-    # Parse nested dict columns safely
-    for col in ["features", "taxAssessments", "propertyTaxes", "owner"]:
+    # 1) Parse dict-like columns
+    for col in DICT_COLUMNS:
         if col in df.columns:
-            df[col] = df[col].apply(safe_parse)
+            df.loc[:, col] = df[col].apply(safe_parse)
 
-    # -----
-    # Drop rows where addressLine2 starts with "Ste". These are offices.
-    df.drop(
-        df[df["addressLine2"].str.startswith("Ste", na=False)].index,
-        inplace=True
-    )
-    
-    # -----
+    # 2) Drop rows where addressLine2 starts with "Ste" (offices)
+    if "addressLine2" in df.columns:
+        ste_mask = df["addressLine2"].astype(str).str.strip().str.lower().str.startswith("ste", na=False)
+        df = df.loc[~ste_mask].copy()
 
-    # Fix blocks of records where we personally know what type of property they are
-
+    # 3) Known manual fixes (drops + type updates)
     updates = [
         ("11 Boulder Brook Dr", "Townhouse"),
         ("1 Hampton Rd", "DROP"),
@@ -48,69 +40,57 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("5 Timber Ln", "Assisted Living"),
         ("6 Timber Ln", "Assisted Living"),
         ("6 White Oak Dr", "Assisted Living"),
-        ("7 Riverwoods Dr", "Assisted Living"), 
+        ("7 Riverwoods Dr", "Assisted Living"),
         ("17 Hampton Rd", "Assisted Living"),
-        ("11 Court St", "DROP")
+        ("11 Court St", "DROP"),
     ]
-    
-    # Convert to DataFrame for easy join-based updating
-    updates_df = pd.DataFrame(updates, columns=["addressLine1", "newType"])
-    
-#     # Show before
-#     print("=== BEFORE ===")
-#     print(df[df["addressLine1"].isin([u[0] for u in updates])][["addressLine1", "propertyType"]])
-#     
-    # Separate drops and updates
-    drop_addresses = [addr for addr, new_type in updates if new_type == "DROP"]
-    update_map = {addr: new_type for addr, new_type in updates if new_type != "DROP"}
-    
-    # Drop all in one go
-    df = df[~df["addressLine1"].isin(drop_addresses)]
-    
-    # Update property types in one go
-    df["propertyType"] = df.apply(
-        lambda row: update_map.get(row["addressLine1"], row["propertyType"]),
-        axis=1
-    )
+    if "addressLine1" in df.columns:
+        drop_addresses = {addr for addr, new_type in updates if new_type == "DROP"}
+        update_map = {addr: new_type for addr, new_type in updates if new_type != "DROP"}
 
-    # -----
-    
-    # Drop all PO Box records
-    df = df[~df["addressLine1"].str.strip().str.upper().str.startswith("PO BOX")]
+        if drop_addresses:
+            df = df.loc[~df["addressLine1"].isin(drop_addresses)].copy()
 
-    # -----
+        if update_map:
+            upd_mask = df["addressLine1"].isin(update_map.keys())
+            # create mapped series only for rows to update, then assign
+            df.loc[upd_mask, "propertyType"] = df.loc[upd_mask, "addressLine1"].map(update_map)
 
-    # Find records where the address is an apartment but there is no propertyType
-    # Assume these are apartments and not condos.
-    
-    # Find rows where propertyType is null/empty and addressLine2 starts with 'Apt'
-    mask = df["propertyType"].isna() & df["addressLine2"].str.startswith("Apt", na=False)
-    
-    # Update propertyType to "Apartment" for those rows
-    df.loc[mask, "propertyType"] = "Apartment"
-    
-    # -----
+    # 4) Drop all PO Box records (by addressLine1)
+    if "addressLine1" in df.columns:
+        pobox_mask = df["addressLine1"].astype(str).str.strip().str.upper().str.startswith("PO BOX", na=False)
+        df = df.loc[~pobox_mask].copy()
 
-    # Find instances where there is a single unit at an address but it is recorded as
-    # a condo. Change this to Townhouse
-    
-    # Group by addressLine1 and count how many records per address
-    group_counts = df.groupby("addressLine1")["addressLine1"].transform("count")
+    # 5) If address is an apartment and propertyType is missing → set to "Apartment"
+    if "addressLine2" in df.columns and "propertyType" in df.columns:
+        apt_mask = df["propertyType"].isna() & df["addressLine2"].astype(str).str.strip().str.lower().str.startswith("apt", na=False)
+        df.loc[apt_mask, "propertyType"] = "Apartment"
 
-    # Mask: only one record for this addressLine1 and propertyType == "Condo"
-    mask = (group_counts == 1) & (df["propertyType"] == "Condo")
+    # 6) Single-record condos → Townhouse
+    if "addressLine1" in df.columns and "propertyType" in df.columns:
+        group_counts = df.groupby("addressLine1", dropna=False)["addressLine1"].transform("count")
+        one_row_condo = (group_counts == 1) & (df["propertyType"].astype(str).str.lower() == "condo")
+        df.loc[one_row_condo, "propertyType"] = "Townhouse"
 
-    # Update propertyType to "Townhouse"
-    df.loc[mask, "propertyType"] = "Townhouse"
+    # 7) Normalize propertyType
+    if "propertyType" not in df.columns:
+        df["propertyType"] = "Unknown"
+    else:
+        df.loc[:, "propertyType"] = (
+            df["propertyType"]
+            .astype(object)
+            .apply(lambda x: x.strip() if isinstance(x, str) else x)
+            .fillna("")
+            .replace("", "Unknown")
+        )
 
-    # Normalize propertyType
-    df["propertyType"] = df["propertyType"].fillna("").apply(lambda x: x.strip() if isinstance(x, str) else "")
-    df["propertyType"] = df["propertyType"].replace("", "Unknown")
-
-    # Replace missing numeric fields
-    df["bedrooms"] = pd.to_numeric(df["bedrooms"], errors="coerce").fillna(0).astype(int)
-    df["bathrooms"] = pd.to_numeric(df["bathrooms"], errors="coerce").fillna(0)
-    df["yearBuilt"] = pd.to_numeric(df["yearBuilt"], errors="coerce").fillna(1600).astype(int)
+    # 8) Numeric fields
+    if "bedrooms" in df.columns:
+        df.loc[:, "bedrooms"] = pd.to_numeric(df["bedrooms"], errors="coerce").fillna(0).astype(int)
+    if "bathrooms" in df.columns:
+        df.loc[:, "bathrooms"] = pd.to_numeric(df["bathrooms"], errors="coerce").fillna(0)
+    if "yearBuilt" in df.columns:
+        df.loc[:, "yearBuilt"] = pd.to_numeric(df["yearBuilt"], errors="coerce").fillna(1600).astype(int)
 
     return df
     

@@ -1,15 +1,16 @@
 import streamlit as st
 import pandas as pd
 
-def make_summary(df: pd.DataFrame) -> pd.DataFrame:
-    summary_data = {
-        "Total Properties": [len(df)],
-        "Year Range": [f"{df['yearBuilt'].min()} – {df['yearBuilt'].max()}"],
+def make_summary_series(df: pd.DataFrame) -> pd.Series:
+    data = {
+        "Total Properties": len(df),
+        "Year Range": f"{df['yearBuilt'].min()} – {df['yearBuilt'].max()}",
     }
-    type_counts = df["propertyType"].value_counts().to_dict()
+    # Add "<Type> Units" counts
+    type_counts = df["propertyType"].value_counts(dropna=False).to_dict()
     for prop_type, count in type_counts.items():
-        summary_data[f"{prop_type} Units"] = [count]
-    return pd.DataFrame(summary_data)
+        data[f"{prop_type} Units"] = int(count)
+    return pd.Series(data)
 
 def render(df_before, df_after, filtered_df):
     st.subheader("Data issues")
@@ -22,14 +23,21 @@ def render(df_before, df_after, filtered_df):
 - There is no clean way to identify an ADU. It might be possible to identify ADUs through analysis.
 """)
 
-    st.subheader("Summary of Data — Before Cleaning")
-    st.dataframe(make_summary(df_before))
+    # Build per-stage summaries as Series
+    s_before   = make_summary_series(df_before).rename("Before Cleaning")
+    s_after    = make_summary_series(df_after).rename("After Cleaning")
+    s_filtered = make_summary_series(filtered_df).rename("After Filtering")
 
-    st.subheader("Summary of Data — After Cleaning")
-    st.dataframe(make_summary(df_after))
+    # Combine into one vertical table; missing entries become NaN (null)
+    combined = pd.concat([s_before, s_after, s_filtered], axis=1)
 
-    st.subheader("Summary of Data — After Filtering")
-    st.dataframe(make_summary(filtered_df))
+    # Optional: order rows so headline metrics come first
+    head = ["Total Properties", "Year Range"]
+    rest = [idx for idx in combined.index if idx not in head]
+    combined = combined.reindex(head + sorted(rest, key=str.lower))
+
+    st.subheader("Summary of Data — Before/After Cleaning and Filtering")
+    st.dataframe(combined)
 
     st.subheader("Filtered Housing Data")
     st.dataframe(filtered_df)

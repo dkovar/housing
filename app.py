@@ -30,6 +30,9 @@ PAGES = [
     "Background",
 ]
 
+df = load_data("table.csv")
+filtered_df = apply_filters(df)
+
 # Keep current page in session
 if "page" not in st.session_state:
     st.session_state.page = "Landing"

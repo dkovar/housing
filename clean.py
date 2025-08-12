@@ -4,8 +4,6 @@ import ast
 import numpy as np
 import re
 
-
-# Add this:
 DICT_COLUMNS = ["features", "taxAssessments", "propertyTaxes", "owner"]
 
 def safe_parse(value):
@@ -65,7 +63,7 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
     regex_updates = [
         (r"^\d[A-Za-z]\sStonewall Way$", "Townhouse"),  # change propertyType via regex
         (r"^\d\sStonewall Way$", "Townhouse"),  # change propertyType via regex
-        (r"^\d?\d DeepMdws", "Manufactured Unit"),  # change propertyType via regex
+        (r"^\d?\d Deep Mdws", "Manufactured"),  # change propertyType via regex
         # (r"^PO Box\s+\d+$", "DROP"),                  # example DROP via regex
     ]
 

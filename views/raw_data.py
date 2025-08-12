@@ -41,3 +41,30 @@ def render(df_before, df_after, filtered_df):
 
     st.subheader("Filtered Housing Data")
     st.dataframe(filtered_df)
+    
+    # --- Top 5 groups of Unknown records (by addressLine1) ---
+    st.subheader("Top 5 Groups of Unknown Records")
+
+    if {"propertyType", "addressLine1", "addressLine2"}.issubset(filtered_df.columns):
+        unknown = filtered_df[filtered_df["propertyType"] == "Unknown"].copy()
+
+        if unknown.empty:
+            st.info("No Unknown records in the current filtered data.")
+        else:
+            counts = (
+                unknown.groupby("addressLine1", dropna=False)
+                       .size()
+                       .sort_values(ascending=False)
+            )
+            top5_addresses = counts.head(5).index
+
+            top5_rows = (
+                unknown[unknown["addressLine1"].isin(top5_addresses)]
+                .loc[:, ["addressLine1", "addressLine2"]]
+                .sort_values(by=["addressLine1", "addressLine2"], kind="mergesort")
+            )
+
+            st.dataframe(top5_rows, use_container_width=True)
+    else:
+        st.warning("Required columns not found to compute Unknown groups.")
+

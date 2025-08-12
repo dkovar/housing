@@ -42,49 +42,34 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("8 Continental Dr", "DROP"),
         ("27 Front St", "DROP")
     ]
+
+    updates = [
+        ("11 Boulder Brook Dr", "Townhouse"),
+        ("1 Hampton Rd", "DROP"),
+        ("117 Water St", "DROP"),
+        ("6 White Oak Dr", "Assisted Living"),
+        ("7 Riverwoods Dr", "Assisted Living"),
+        ("17 Hampton Rd", "Assisted Living"),
+        ("40 Hampton Rd", "Manufactured"),
+        ("11 Court St", "DROP"),
+        ("16 Kingston Rd", "DROP"),
+        ("8 Continental Dr", "DROP"),
+        ("27 Front St", "DROP"),
+        # Wildcard examples:
+        (r"^\d?\d Deep Mdws$", "Manufactured"),   # optional first digit, then digit
+        (r"^.*Stonewall Way$", "Townhouse"),
+        (r"^\d Timber Ln", "Assisted Living")
+    ]
     
     if "addressLine1" in df.columns:
-        drop_addresses = {addr for addr, new_type in updates if new_type == "DROP"}
-        update_map = {addr: new_type for addr, new_type in updates if new_type != "DROP"}
-
-        if drop_addresses:
-            df = df.loc[~df["addressLine1"].isin(drop_addresses)].copy()
-
-        if update_map:
-            upd_mask = df["addressLine1"].isin(update_map.keys())
-            # create mapped series only for rows to update, then assign
-            df.loc[upd_mask, "propertyType"] = df.loc[upd_mask, "addressLine1"].map(update_map)
-
+        for pattern, new_type in updates:
+            # Build mask for this pattern (regex match, case-insensitive)
+            mask = df["addressLine1"].astype(str).str.contains(pattern, case=False, na=False, regex=True)
     
-    # 3b) Regex-based fixes (drops + updates)
-    #   Use Python regular expressions. Examples:
-    #   - r"^\d[A-Za-z]\sStonewall Way$"  -> matches "3B Stonewall Way", "7C Stonewall Way", etc.
-    #   - r"^1\d{2}\sWater St$"           -> matches "117 Water St", "123 Water St" (100–199)
-    regex_updates = [
-        (r"^\d[A-Za-z]\sStonewall Way$", "Townhouse"),  # change propertyType via regex
-        (r"^\d\sStonewall Way$", "Townhouse"),  # change propertyType via regex
-#        (r"^\d?\d Deep Mdws", "Manufactured"),  # change propertyType via regex
-        (r"^\d Timber Ln", "Assisted Living"),  # change propertyType via regex
-        # (r"^PO Box\s+\d+$", "DROP"),                  # example DROP via regex
-    ]
-
-    regex_drop_patterns = [pat for pat, new_type in regex_updates if new_type == "DROP"]
-    if regex_drop_patterns:
-        # Combine OR of all patterns: (pat1)|(pat2)|...
-        drop_mask_regex = pd.Series(False, index=df.index)
-        s = df["addressLine1"].astype(str)
-        for pat in regex_drop_patterns:
-            drop_mask_regex |= s.str.match(pat, na=False)
-        df = df.loc[~drop_mask_regex].copy()
-    
-    # ---- regex updates (set propertyType)
-    regex_update_pairs = [(pat, new_type) for pat, new_type in regex_updates if new_type != "DROP"]
-    if regex_update_pairs:
-        s = df["addressLine1"].astype(str)
-        for pat, new_type in regex_update_pairs:
-            match_mask = s.str.match(pat, na=False)
-            if match_mask.any():
-                df.loc[match_mask, "propertyType"] = new_type
+            if new_type == "DROP":
+                df = df.loc[~mask].copy()
+            else:
+                df.loc[mask, "propertyType"] = new_type
             
     # 4) Drop all PO Box records (by addressLine1)
     if "addressLine1" in df.columns:

@@ -57,8 +57,7 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("27 Front St", "DROP"),
         # Wildcard examples:
         (r".?. Deep Mdws", "Manufactured"),
-        (r"Exeter River Lndg", "Manufactured")
-exeter river landing
+        (r"Exeter River Lndg", "Manufactured"),
         (r"^.*Stonewall Way", "Townhouse"),
         (r"\d Timber Ln", "Assisted Living")
     ]

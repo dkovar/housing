@@ -17,12 +17,9 @@ from clean import clean_housing_data
 st.set_page_config(layout="wide")
 st.title("🏠 Housing Data Explorer")
 
-df = load_data("table.csv")
-df = clean_housing_data(df)
-
-
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select a section", [
+# Pages list (Landing first)
+PAGES = [
+    "Landing",
     "Raw Data",
     "Property Type Pie Chart",
     "Property Type by Year Built",
@@ -30,13 +27,23 @@ page = st.sidebar.radio("Select a section", [
     "Map View",
     "About",
     "Background",
-    "To Do",
-    "Data"
-])
+]
 
-filtered_df = apply_filters(df)
+# Keep current page in session
+if "page" not in st.session_state:
+    st.session_state.page = "Landing"
 
-if page == "Raw Data":
+# Sidebar nav (you can keep filters above or below as you prefer)
+st.sidebar.title("Navigation")
+selected = st.sidebar.radio("Select a section", PAGES, index=PAGES.index(st.session_state.page))
+if selected != st.session_state.page:
+    navigate_to(selected)
+
+# Route
+page = st.session_state.page
+if page == "Landing":
+    landing.render(navigate_to, PAGES)
+elif page == "Raw Data":
     raw_data.render(filtered_df)
 elif page == "Property Type Pie Chart":
     pie_chart.render(filtered_df)
@@ -50,7 +57,3 @@ elif page == "About":
     about.render()
 elif page == "Background":
     background.render()
-elif page == "To Do":
-    todo.render()
-elif page == "Data":
-    data.render()

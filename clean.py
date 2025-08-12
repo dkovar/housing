@@ -36,6 +36,7 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         ("6 White Oak Dr", "Assisted Living"),
         ("7 Riverwoods Dr", "Assisted Living"),
         ("17 Hampton Rd", "Assisted Living"),
+        ("40 Hampton Rd", "Manufactured"),
         ("11 Court St", "DROP"),
         ("16 Kingston Rd", "DROP"),
         ("8 Continental Dr", "DROP"),

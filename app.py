@@ -35,7 +35,7 @@ PAGES = [
 @st.cache_data
 def load_and_clean_data(path):
     df_before = load_data("table.csv")
-    df_cleaned = clean_housing_data(df_before)
+    df_clean = clean_housing_data(df_before)
     return df_before, df_clean
 
 df_before, df_clean = load_and_clean_data(data_path)

@@ -36,7 +36,7 @@ PAGES = [
 def load_and_clean_data(path):
     df_before = load_data("table.csv")
     df_clean = clean_housing_data(df_before)
-    return df
+    return df_clean
 
 df = load_and_clean_data(data_path)
 

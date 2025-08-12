@@ -67,4 +67,15 @@ def render(df_before, df_after, filtered_df):
         
     st.subheader("Filtered Housing Data")
     st.dataframe(filtered_df)
+    
+    # Unknown records table
+    unknown_df = (
+        filtered_df[filtered_df["propertyType"] == "Unknown"]
+        .sort_values("addressLine1", na_position="last")
+    )
+    st.subheader("Unknown Property Records")
+    if unknown_df.empty:
+        st.info("No Unknown records in the current filtered data.")
+    else:
+        st.dataframe(unknown_df)
 

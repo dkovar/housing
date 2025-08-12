@@ -4,18 +4,17 @@ import ast
 import numpy as np
 import re
 
+
+# Add this:
+DICT_COLUMNS = ["features", "taxAssessments", "propertyTaxes", "owner"]
+
 def safe_parse(value):
-    """
-    Safely parse a string to a Python object using literal_eval if it looks like a dict.
-    Returns an empty dict on failure or if value is NaN/invalid.
-    """
     try:
         if pd.notna(value) and isinstance(value, str) and value.strip().startswith("{"):
             return ast.literal_eval(value)
     except Exception:
         pass
     return {}
-
 
 def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
     # Work on our own copy

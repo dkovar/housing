@@ -38,9 +38,6 @@ def render(df_before, df_after, filtered_df):
 
     st.subheader("Summary of Data — Before/After Cleaning and Filtering")
     st.dataframe(combined)
-
-    st.subheader("Filtered Housing Data")
-    st.dataframe(filtered_df)
     
     # --- Top 5 groups of Unknown records (by addressLine1) ---
     st.subheader("Top 5 Groups of Unknown Records")
@@ -67,4 +64,7 @@ def render(df_before, df_after, filtered_df):
             st.dataframe(top5_rows, use_container_width=True)
     else:
         st.warning("Required columns not found to compute Unknown groups.")
+        
+    st.subheader("Filtered Housing Data")
+    st.dataframe(filtered_df)
 

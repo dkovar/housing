@@ -31,6 +31,7 @@ PAGES = [
 ]
 
 df = load_data("table.csv")
+df = clean_housing_data(df)
 filtered_df = apply_filters(df)
 
 # Keep current page in session

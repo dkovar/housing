@@ -3,6 +3,7 @@ import pandas as pd
 import ast
 import numpy as np
 import re
+import json
 
 DICT_COLUMNS = ["features", "taxAssessments", "propertyTaxes", "owner"]
 
@@ -52,6 +53,7 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
     if "addressLine2" in df.columns:
         ste_mask = df["addressLine2"].astype(str).str.strip().str.lower().str.startswith("ste", na=False)
         df = df.loc[~ste_mask].copy()
+
 
     # 3) Known manual fixes (drops + type updates)
     updates = [
@@ -120,6 +122,8 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
     
+
+
 def promote_apartment_buildings(df: pd.DataFrame) -> pd.DataFrame:
     """
     For each addressLine1 group where:
@@ -128,8 +132,8 @@ def promote_apartment_buildings(df: pd.DataFrame) -> pd.DataFrame:
 
     create a new 'Apartment building' record (duplicating the first row but nulling
     addressLine2/bedrooms/bathrooms/squareFootage), set all existing rows in the
-    group to 'Apartment unit', and set the building row's id to the original id
-    with the addressLine2 segment removed (no synthetic suffix).
+    group to 'Apartment unit', and set the building row's id and formattedAddress
+    to versions without the addressLine2 token.
     """
     df = df.copy()
 
@@ -153,24 +157,56 @@ def promote_apartment_buildings(df: pd.DataFrame) -> pd.DataFrame:
         s = re.sub(r"\s+", "-", s)
         return s
 
+    def _remove_addr2_from_formatted(formatted: str | float, addr2: str | float) -> str:
+        """Remove the addressLine2 token from a formattedAddress, cleaning commas/spaces."""
+        if pd.isna(formatted) or pd.isna(addr2):
+            return formatted if isinstance(formatted, str) else ""
+        s = str(formatted)
+        token = str(addr2).strip()
+        esc = re.escape(token)
+
+        # Try most common patterns: ", <addr2>,", ", <addr2>$", "^<addr2>,"
+        patterns = [
+            rf",\s*{esc}\s*,",     # middle: ", Apt 11, "
+            rf",\s*{esc}\s*$",     # tail: ", Apt 11"
+            rf"^\s*{esc}\s*,\s*",  # head: "Apt 11, "
+        ]
+        s_new = s
+        for pat in patterns:
+            s_new = re.sub(pat, ", ", s_new)
+
+        # Normalize commas/spaces: collapse multiple commas/spaces, tidy around commas
+        s_new = re.sub(r"\s*,\s*", ", ", s_new)   # single space after commas
+        s_new = re.sub(r",\s*,", ", ", s_new)     # remove accidental double commas
+        s_new = re.sub(r"\s{2,}", " ", s_new)     # collapse multiple spaces
+        s_new = s_new.strip(" ,")
+        return s_new
+
     new_rows = []
     for key in eligible_keys:
         grp_idx = df.index[df["addressLine1"] == key]
         grp = df.loc[grp_idx]
 
         # Mark existing rows as apartment units
-        df.loc[grp_idx, "propertyType"] = "Apartment"
+        df.loc[grp_idx, "propertyType"] = "Apartment unit"
 
         # First row becomes building template
         first = grp.iloc[0].copy()
 
-        # Remove addressLine2 token from id, e.g.
-        # "1-Brookside-Dr,-Apt-11,-Exeter,-NH-03833" -> "1-Brookside-Dr,-Exeter,-NH-03833"
-        if "id" in first.index and "addressLine2" in first.index:
+        # Remove addressLine2 token from id and formattedAddress (if present)
+        if "addressLine2" in first.index:
             addr2 = first["addressLine2"]
-            if pd.notna(addr2) and str(addr2).strip():
-                norm = _normalize_addr2_for_id(addr2)
-                first["id"] = re.sub(rf",-{re.escape(norm)},", ",-", str(first["id"]))
+        else:
+            addr2 = None
+
+        # --- fix id ---
+        if "id" in first.index and pd.notna(addr2) and str(addr2).strip():
+            norm = _normalize_addr2_for_id(addr2)
+            first["id"] = re.sub(rf",-{re.escape(norm)},", ",-", str(first["id"]))
+
+        # --- fix formattedAddress ---
+        if "formattedAddress" in first.index and pd.notna(addr2) and str(addr2).strip():
+            first["formattedAddress"] = _remove_addr2_from_formatted(first["formattedAddress"], addr2)
 
         # Null fields for building record
         for col in ["addressLine2", "bedrooms", "bathrooms", "squareFootage"]:
@@ -191,24 +227,73 @@ def promote_apartment_buildings(df: pd.DataFrame) -> pd.DataFrame:
         for col in new_rows_df.columns:
             if new_rows_df[col].isna().all():
                 target = df[col].dtype
-                # Float targets: use np.nan
                 if pd.api.types.is_float_dtype(target):
                     new_rows_df[col] = np.nan
                     new_rows_df[col] = new_rows_df[col].astype(target)
-                # Integer targets: use pandas nullable Int64
                 elif pd.api.types.is_integer_dtype(target):
                     new_rows_df[col] = pd.Series([pd.NA] * len(new_rows_df), dtype="Int64")
-                # Boolean targets: use pandas nullable boolean
                 elif pd.api.types.is_bool_dtype(target):
                     new_rows_df[col] = pd.Series([pd.NA] * len(new_rows_df), dtype="boolean")
-                # Datetime-like targets
                 elif pd.api.types.is_datetime64_any_dtype(target):
                     new_rows_df[col] = pd.NaT
                     new_rows_df[col] = new_rows_df[col].astype(target)
-                # Everything else: keep as object to avoid NA casting issues
                 else:
                     new_rows_df[col] = new_rows_df[col].astype("object")
 
         df = pd.concat([df, new_rows_df], ignore_index=True)
 
     return df
+
+    
+def find_missing_unit_with_matching_record(df: pd.DataFrame) -> pd.DataFrame:
+    unit_regex_contains = r"(?i)(?:Apt\s*\w+|Unit\s*\w+|#\s*\w+|Suite\s*\w+|Ste\s*\w+)"
+    unit_regex_capture  = r"(?i)(Apt\s*\w+|Unit\s*\w+|#\s*\w+|Suite\s*\w+|Ste\s*\w+)"
+
+    mask_missing = (
+        df["addressLine2"].isna()
+        & df["formattedAddress"].astype(str).str.contains(unit_regex_contains, na=False)
+    )
+
+    candidates = df.loc[mask_missing, ["formattedAddress", "addressLine1", "addressLine2"]].copy()
+    candidates["extractedUnit"] = candidates["formattedAddress"].str.extract(unit_regex_capture, expand=False)
+
+    if candidates.empty or candidates["extractedUnit"].isna().all():
+        return candidates.iloc[0:0]
+
+    def _norm(s: pd.Series) -> pd.Series:
+        s = s.astype(str).str.lower().str.strip().str.replace(r"\s+", " ", regex=True)
+        return s
+
+    candidates["_key_addr1"] = _norm(candidates["addressLine1"])
+    candidates["_key_unit"]  = _norm(candidates["extractedUnit"])
+
+    existing = df.loc[df["addressLine2"].notna(), ["addressLine1", "addressLine2"]].copy()
+    if existing.empty:
+        return candidates.iloc[0:0]
+
+    existing["_key_addr1"] = _norm(existing["addressLine1"])
+    existing["_key_unit"]  = _norm(existing["addressLine2"])
+
+    right_keys = (
+        existing[["_key_addr1", "_key_unit"]]
+        .drop_duplicates()
+        .assign(__has_match=True)
+    )
+
+    merged = candidates.merge(
+        right_keys,
+        on=["_key_addr1", "_key_unit"],
+        how="left",
+        validate="m:1",
+    )
+
+    match_flag = merged["__has_match"].eq(True)
+
+    result = merged.loc[
+        match_flag,
+        ["formattedAddress", "addressLine1", "addressLine2", "extractedUnit"]
+    ].copy()
+
+    # VERY IMPORTANT: carry through the original index so updates align correctly
+    result.index = candidates.index[match_flag]
+    return result.sort_values(["addressLine1", "extractedUnit"], na_position="last")

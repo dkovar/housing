@@ -13,16 +13,41 @@ def safe_parse(value):
     except Exception:
         pass
     return {}
+    
+def safe_parse_to_dict(x):
+    if pd.isna(x):
+        return {}
+    if isinstance(x, dict):
+        return x
+    if isinstance(x, str):
+        s = x.strip()
+        if s.startswith("{") and s.endswith("}"):
+            # try JSON first
+            try:
+                return json.loads(s)
+            except json.JSONDecodeError:
+                # fallback for single-quoted / python-literal dicts
+                try:
+                    return ast.literal_eval(s)
+                except Exception:
+                    return {}
+    return {}
+
 
 def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
     # Work on our own copy
     df = df.copy()
 
-    # 1) Parse dict-like columns
+    # 1) Parse dict-like columns into dicts
     for col in DICT_COLUMNS:
         if col in df.columns:
-            df.loc[:, col] = df[col].apply(safe_parse)
+            df.loc[:, col] = df[col].apply(safe_parse_to_dict)
 
+    # Extract the architectureType from features and make it its own column
+    df["architectureType"] = df["features"].apply(
+        lambda d: d.get("architectureType") if isinstance(d, dict) else None
+    )
+    
     # 2) Drop rows where addressLine2 starts with "Ste" (offices)
     if "addressLine2" in df.columns:
         ste_mask = df["addressLine2"].astype(str).str.strip().str.lower().str.startswith("ste", na=False)
@@ -45,7 +70,8 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
         (r".?. Deep Mdws", "Manufactured"),
         (r"Exeter River Lndg", "Manufactured"),
         (r"^.*Stonewall Way", "Townhouse"),
-        (r"\d Timber Ln", "Assisted Living")
+        (r"\d Timber Ln", "Assisted Living"),
+        (r"Stonearch At Hidden Mdw?", "Single Family (Planning)")
     ]
     
     if "addressLine1" in df.columns:
@@ -59,9 +85,7 @@ def clean_housing_data(df: pd.DataFrame) -> pd.DataFrame:
                 df.loc[mask, "propertyType"] = new_type
             
     # 4) Drop all PO Box records (by addressLine1)
-    if "addressLine1" in df.columns:
-        pobox_mask = df["addressLine1"].astype(str).str.strip().str.upper().str.startswith("PO BOX", na=False)
-        df = df.loc[~pobox_mask].copy()
+    df = df[~df["addressLine1"].str.contains(r"(?i)^P\.?\s*O\.?\s*Box", na=False)]
 
     # 5) If address is an apartment and propertyType is missing → set to "Apartment"
     if "addressLine2" in df.columns and "propertyType" in df.columns:

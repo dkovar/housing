@@ -68,7 +68,7 @@ elif page == "Raw Data":
 elif page == "Property Type Pie Chart":
     pie_chart.render(filtered_df)
 elif page == "Property Type by Year Built":
-    bar_by_year.render(filtered_df)
+    bar_by_year.render(filtered_df, base_df=df_clean)
 elif page == "Other Charts":
     other_charts.render(filtered_df)
 elif page == "Map View":

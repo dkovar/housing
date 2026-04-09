@@ -1,0 +1,66 @@
+slug: exeter-nh
+name: Exeter, New Hampshire
+description: Baseline overrides derived from the 2024 assessor export.
+cleaning:
+  drop_if_address_line2_prefix:
+    - ste
+  drop_if_address_line1_regex:
+    - pattern: "(?i)^P\.?\s*O\.?\s*Box"
+      reason: "PO boxes are mailing addresses, not physical housing units"
+  property_type_overrides:
+    - match: "11 Boulder Brook Dr"
+      type: literal
+      new_value: "Townhouse"
+    - match: "6 White Oak Dr"
+      type: literal
+      new_value: "Assisted Living"
+    - match: "7 Riverwoods Dr"
+      type: literal
+      new_value: "Assisted Living"
+    - match: "17 Hampton Rd"
+      type: literal
+      new_value: "Assisted Living"
+    - match: "40 Hampton Rd"
+      type: literal
+      new_value: "Manufactured"
+    - match: "41-44 Mckay Dr"
+      type: literal
+      new_value: "Apartment"
+    - match: "Stonearch At Hidden Mdw"
+      type: regex
+      new_value: "Single Family (Planning)"
+    - match: "^.*Stonewall Way"
+      type: regex
+      new_value: "Townhouse"
+    - match: "\\d Timber Ln"
+      type: regex
+      new_value: "Assisted Living"
+    - match: "Exeter River Lndg"
+      type: regex
+      new_value: "Manufactured"
+    - match: ".?. Deep Mdws"
+      type: regex
+      new_value: "Manufactured"
+  drop_records:
+    - match: "1 Hampton Rd"
+      type: literal
+    - match: "117 Water St"
+      type: literal
+    - match: "11 Court St"
+      type: literal
+    - match: "16 Kingston Rd"
+      type: literal
+    - match: "8 Continental Dr"
+      type: literal
+    - match: "27 Front St"
+      type: literal
+    - match: "Stonearch At Hidden Mdw"
+      type: regex
+    - match: "Exeter River Lndg"
+      type: regex
+schema:
+  inferred_default_year_built: 1600
+  auto_apartment_from_address2_prefix:
+    prefix: "apt"
+    new_value: "Apartment"
+  solo_condo_behaviour: townhouse  # townhouse | leave

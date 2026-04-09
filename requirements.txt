@@ -21,3 +21,10 @@ asttokens>=2.4
 # Optional: geospatial tools (if you expand mapping)
 geopandas>=0.14
 shapely>=2.0
+
+# Database / persistence
+sqlalchemy>=2.0
+psycopg[binary]>=3.2
+
+# HTML parsing
+beautifulsoup4>=4.12

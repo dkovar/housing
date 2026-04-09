@@ -1,0 +1,194 @@
+[
+  {
+    "meeting_date": "2026-04-23T19:00:00-04:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-74",
+    "agendas": [],
+    "minutes": [],
+    "packets": [],
+    "video": []
+  },
+  {
+    "meeting_date": "2026-04-09T19:00:00-04:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-73",
+    "agendas": [],
+    "minutes": [],
+    "packets": [],
+    "video": [
+      "https://www.exeternh.gov/pb/planning-board-73"
+    ]
+  },
+  {
+    "meeting_date": "2026-03-26T19:00:00-04:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-72",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/64146/pb-leg.03-26-26.pdf"
+    ],
+    "minutes": [],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/64146/03-26-26_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=Zakl6czFMT8"
+    ]
+  },
+  {
+    "meeting_date": "2026-03-12T19:00:00-04:00",
+    "title": "Planning Board - CANCELLED",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-cancelled-13",
+    "agendas": [],
+    "minutes": [],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63835/03-12-2026_pb_mtg_packet.pdf"
+    ],
+    "video": []
+  },
+  {
+    "meeting_date": "2026-02-26T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-69",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63834/pb-leg.02-26-26.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63834/pb_02-26-2026_draft_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63834/02-26-2026_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=XC4cprz7zHk"
+    ]
+  },
+  {
+    "meeting_date": "2026-02-12T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-68",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63833/pb-leg.02-12-26.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63833/pb_02-12-26_draft_min.docx"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63833/02-12-26_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=39BJ4Q9wL_k"
+    ]
+  },
+  {
+    "meeting_date": "2026-01-22T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-67",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63832/pb-leg.01-22-26.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63832/pb_01-22-26_final_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63832/01-22-2026_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=GsZXexWoNN0"
+    ]
+  },
+  {
+    "meeting_date": "2026-01-08T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-71",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63371/pb-leg.01-08-26.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63371/pb_01-08-26_final_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63371/01-08-2026_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=MUEQR56qJcU"
+    ]
+  },
+  {
+    "meeting_date": "2025-12-11T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-66",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63370/pb-leg.12-11-25.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63370/pb_12-11-25_final_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63370/12-11-25_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://youtu.be/dm7h0VbEd2o"
+    ]
+  },
+  {
+    "meeting_date": "2025-11-20T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-65",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63369/pb-leg.11-20-25.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63369/pb_11-20-25_final_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63369/11-20-25_pb_mtg_packet.pdf",
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63369/11-20-25_pb_mtg_packet_2.pdf"
+    ],
+    "video": [
+      "https://youtube.com/live/7_grccc9TNA?feature=share"
+    ]
+  },
+  {
+    "meeting_date": "2025-11-06T19:00:00-05:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-64",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63368/pb-leg.11-06-25.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63368/pb_11-06-25_final_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63368/11-06-25_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=PoagmVY4qaA"
+    ]
+  },
+  {
+    "meeting_date": "2025-10-23T19:00:00-04:00",
+    "title": "Planning Board",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-63",
+    "agendas": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63367/pb-leg.10-23-25.pdf"
+    ],
+    "minutes": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/63367/pb_10-23-25_final_min.pdf"
+    ],
+    "packets": [
+      "https://www.exeternh.gov/sites/default/files/fileattachments/planning_board/meeting/packets/63367/10-23-25_pb_mtg_packet.pdf"
+    ],
+    "video": [
+      "https://www.youtube.com/watch?v=KNlJ8oekEKs"
+    ]
+  },
+  {
+    "meeting_date": "2025-10-09T19:00:00-04:00",
+    "title": "Planning Board - CANCELLED",
+    "detail_url": "https://www.exeternh.gov/pb/planning-board-cancelled-12",
+    "agendas": [],
+    "minutes": [],
+    "packets": [],
+    "video": []
+  }
+]
